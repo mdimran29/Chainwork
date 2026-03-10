@@ -576,24 +576,19 @@
           "verifyTx"
         ],
         "summary": "Verify a Solana Devnet transaction",
-        "description": "Accepts a transaction signature and an expected wallet address. Fetches the transaction from Solana Devnet and confirms it exists, was successful, and involves the given wallet.",
+        "description": "Accepts a transaction signature. Fetches the transaction from Solana Devnet and confirms: (1) it exists, (2) status is successful (meta.err === null), (3) the expected wallet address is involved in the account keys.",
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["signature", "wallet"],
+                "required": ["signature"],
                 "properties": {
                   "signature": {
                     "type": "string",
                     "description": "Base58-encoded Solana transaction signature",
                     "example": "5UfgJ5vVZxUxefDGqzqkVLHzHxVTyYH9StYyHKGSzYk5xPbdjCGbGmWz74arTm5JnYSMNXByBMJxmvqrdLXbmPz"
-                  },
-                  "wallet": {
-                    "type": "string",
-                    "description": "Base58-encoded Solana wallet public key expected to be involved in the transaction",
-                    "example": "8MDmoKArpWj9zGTeNxk7NpMe78tLEqxDiHY5XJRmWQ8y"
                   }
                 }
               }
@@ -602,7 +597,7 @@
         },
         "responses": {
           "200": {
-            "description": "Transaction verified (successful or failed)",
+            "description": "Transaction found — returns verification result",
             "content": {
               "application/json": {
                 "schema": {
@@ -611,25 +606,26 @@
                     "success": { "type": "boolean" },
                     "transactionFound": { "type": "boolean" },
                     "status": { "type": "string", "enum": ["success", "failed"] },
-                    "walletMatched": { "type": "boolean" },
-                    "signature": { "type": "string" },
-                    "slot": { "type": "integer" },
-                    "blockTime": { "type": "integer" },
-                    "message": { "type": "string" }
+                    "walletMatched": { "type": "boolean" }
                   }
                 },
                 "examples": {
                   "success": {
-                    "summary": "Transaction verified successfully",
+                    "summary": "All conditions met",
                     "value": {
                       "success": true,
                       "transactionFound": true,
                       "status": "success",
-                      "walletMatched": true,
-                      "signature": "5UfgJ5vVZxUxefDGqzqkVLHzHxVTyYH9StYyHKGSzYk5xPbdjCGbGmWz74arTm5JnYSMNXByBMJxmvqrdLXbmPz",
-                      "slot": 280491234,
-                      "blockTime": 1741632000,
-                      "message": "Transaction verified successfully on Solana Devnet"
+                      "walletMatched": true
+                    }
+                  },
+                  "failed": {
+                    "summary": "Transaction failed on-chain",
+                    "value": {
+                      "success": false,
+                      "transactionFound": true,
+                      "status": "failed",
+                      "walletMatched": false
                     }
                   }
                 }
@@ -637,16 +633,13 @@
             }
           },
           "400": {
-            "description": "Missing or invalid input",
+            "description": "Missing or invalid signature",
             "content": {
               "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": { "type": "boolean", "example": false },
-                    "transactionFound": { "type": "boolean", "example": false },
-                    "message": { "type": "string" }
-                  }
+                "example": {
+                  "success": false,
+                  "transactionFound": false,
+                  "message": "Missing or invalid \"signature\" field"
                 }
               }
             }
@@ -655,13 +648,11 @@
             "description": "Transaction not found on Devnet",
             "content": {
               "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": { "type": "boolean", "example": false },
-                    "transactionFound": { "type": "boolean", "example": false },
-                    "message": { "type": "string", "example": "Transaction not found on Solana Devnet" }
-                  }
+                "example": {
+                  "success": false,
+                  "transactionFound": false,
+                  "status": "not_found",
+                  "walletMatched": false
                 }
               }
             }

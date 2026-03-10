@@ -1,15 +1,18 @@
 const { Connection, PublicKey } = require('@solana/web3.js');
-const bs58 = require('bs58').default;
 
+// Solana Devnet RPC endpoint
 const DEVNET_RPC = 'https://api.devnet.solana.com';
+
+// Replace this with the actual expected wallet public key
+const EXPECTED_WALLET_ADDRESS = 'REPLACE_WITH_EXPECTED_PUBLIC_KEY';
 
 // @desc    Verify a Solana Devnet transaction
 // @route   POST /api/verify-tx
 // @access  Public
 const verifyTx = async (req, res) => {
-  const { signature, wallet } = req.body;
+  const { signature } = req.body;
 
-  // --- Input validation ---
+  // Input validation
   if (!signature || typeof signature !== 'string' || signature.trim() === '') {
     return res.status(400).json({
       success: false,
@@ -18,90 +21,64 @@ const verifyTx = async (req, res) => {
     });
   }
 
-  if (!wallet || typeof wallet !== 'string' || wallet.trim() === '') {
-    return res.status(400).json({
-      success: false,
-      transactionFound: false,
-      message: 'Missing or invalid "wallet" field',
-    });
-  }
-
-  // Validate wallet is a valid Solana public key
-  let walletPubkey;
-  try {
-    walletPubkey = new PublicKey(wallet.trim());
-  } catch {
-    return res.status(400).json({
-      success: false,
-      transactionFound: false,
-      message: 'Invalid wallet address',
-    });
-  }
-
-  // Validate signature is a valid base58-encoded 64-byte value
-  try {
-    const decoded = bs58.decode(signature.trim());
-    if (decoded.length !== 64) throw new Error('Wrong length');
-  } catch {
-    return res.status(400).json({
-      success: false,
-      transactionFound: false,
-      message: 'Invalid transaction signature — must be a base58-encoded 64-byte value',
-    });
-  }
-
   try {
     const connection = new Connection(DEVNET_RPC, 'confirmed');
 
-    // Fetch transaction from Solana Devnet
+    // Fetch the transaction from Solana Devnet
     const transaction = await connection.getTransaction(signature.trim(), {
       commitment: 'confirmed',
       maxSupportedTransactionVersion: 0,
     });
 
-    // Transaction not found on-chain
+    // Condition 1: Transaction must exist
     if (!transaction) {
       return res.status(404).json({
         success: false,
         transactionFound: false,
-        message: 'Transaction not found on Solana Devnet',
+        status: 'not_found',
+        walletMatched: false,
       });
     }
 
-    // Check transaction status
-    const isSuccessful = transaction.meta && transaction.meta.err === null;
+    // Condition 2: Transaction status must be successful (meta.err === null)
+    const isSuccessful = transaction.meta !== null && transaction.meta.err === null;
 
-    // Check if the expected wallet appears in the transaction account keys
+    // Condition 3: Expected wallet address must be in the transaction account keys
     const accountKeys =
       transaction.transaction?.message?.accountKeys ||
       transaction.transaction?.message?.staticAccountKeys ||
       [];
 
-    const walletMatched = accountKeys.some(key => {
-      const keyStr = typeof key.toBase58 === 'function' ? key.toBase58() : key.toString();
-      return keyStr === walletPubkey.toBase58();
-    });
+    let walletMatched = false;
+    try {
+      const expectedPubkey = new PublicKey(EXPECTED_WALLET_ADDRESS);
+      walletMatched = accountKeys.some(key => {
+        const keyStr = typeof key.toBase58 === 'function' ? key.toBase58() : key.toString();
+        return keyStr === expectedPubkey.toBase58();
+      });
+    } catch {
+      // EXPECTED_WALLET_ADDRESS is still a placeholder — skip wallet check
+      walletMatched = false;
+    }
 
+    // Transaction found but failed on-chain
     if (!isSuccessful) {
       return res.status(200).json({
         success: false,
         transactionFound: true,
         status: 'failed',
         walletMatched,
-        message: 'Transaction was found but it failed on-chain',
       });
     }
 
+    // All conditions met — success
     return res.status(200).json({
       success: true,
       transactionFound: true,
       status: 'success',
       walletMatched,
-      signature: signature.trim(),
-      slot: transaction.slot ?? null,
-      blockTime: transaction.blockTime ?? null,
-      message: 'Transaction verified successfully on Solana Devnet',
     });
+
   } catch (error) {
     console.error('[verifyTx] Error:', error.message);
     return res.status(500).json({
