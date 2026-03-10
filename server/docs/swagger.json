@@ -17,6 +17,9 @@
     },
     {
       "name": "users"
+    },
+    {
+      "name": "verifyTx"
     }
   ],
   "components": {
@@ -29,9 +32,55 @@
     }
   },
   "paths": {
+    "/": {
+      "post": {
+        "tags": [
+          "contracts"
+        ],
+        "summary": "POST /",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "contracts"
+        ],
+        "summary": "GET /",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
     "/freelancers": {
       "get": {
-        "tags": ["users"],
+        "tags": [
+          "users"
+        ],
         "summary": "GET /freelancers",
         "security": [
           {
@@ -47,7 +96,9 @@
     },
     "/profile": {
       "get": {
-        "tags": ["users"],
+        "tags": [
+          "users"
+        ],
         "summary": "GET /profile",
         "security": [
           {
@@ -61,7 +112,9 @@
         }
       },
       "put": {
-        "tags": ["users"],
+        "tags": [
+          "users"
+        ],
         "summary": "PUT /profile",
         "security": [
           {
@@ -87,7 +140,9 @@
     },
     "/:id": {
       "get": {
-        "tags": ["contracts"],
+        "tags": [
+          "contracts"
+        ],
         "summary": "GET /:id",
         "security": [
           {
@@ -101,7 +156,9 @@
         }
       },
       "put": {
-        "tags": ["jobs"],
+        "tags": [
+          "jobs"
+        ],
         "summary": "PUT /:id",
         "security": [
           {
@@ -125,7 +182,9 @@
         }
       },
       "delete": {
-        "tags": ["jobs"],
+        "tags": [
+          "jobs"
+        ],
         "summary": "DELETE /:id",
         "security": [
           {
@@ -141,48 +200,10 @@
     },
     "/:id/reviews": {
       "post": {
-        "tags": ["users"],
+        "tags": [
+          "users"
+        ],
         "summary": "POST /:id/reviews",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Success"
-          }
-        },
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object"
-              }
-            }
-          }
-        }
-      }
-    },
-    "/": {
-      "get": {
-        "tags": ["contracts"],
-        "summary": "GET /",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Success"
-          }
-        }
-      },
-      "post": {
-        "tags": ["contracts"],
-        "summary": "POST /",
         "security": [
           {
             "bearerAuth": []
@@ -207,7 +228,9 @@
     },
     "/:id/proposals": {
       "post": {
-        "tags": ["jobs"],
+        "tags": [
+          "jobs"
+        ],
         "summary": "POST /:id/proposals",
         "security": [
           {
@@ -233,7 +256,9 @@
     },
     "/:id/proposals/:proposalId/accept": {
       "put": {
-        "tags": ["jobs"],
+        "tags": [
+          "jobs"
+        ],
         "summary": "PUT /:id/proposals/:proposalId/accept",
         "security": [
           {
@@ -259,7 +284,9 @@
     },
     "/:id/proposals/:proposalId/reject": {
       "put": {
-        "tags": ["jobs"],
+        "tags": [
+          "jobs"
+        ],
         "summary": "PUT /:id/proposals/:proposalId/reject",
         "security": [
           {
@@ -285,7 +312,9 @@
     },
     "/:id/complete": {
       "put": {
-        "tags": ["jobs"],
+        "tags": [
+          "jobs"
+        ],
         "summary": "PUT /:id/complete",
         "security": [
           {
@@ -311,7 +340,9 @@
     },
     "/client/jobs": {
       "get": {
-        "tags": ["jobs"],
+        "tags": [
+          "jobs"
+        ],
         "summary": "GET /client/jobs",
         "security": [
           {
@@ -327,7 +358,9 @@
     },
     "/freelancer/jobs": {
       "get": {
-        "tags": ["jobs"],
+        "tags": [
+          "jobs"
+        ],
         "summary": "GET /freelancer/jobs",
         "security": [
           {
@@ -343,7 +376,9 @@
     },
     "/:id/contract": {
       "put": {
-        "tags": ["jobs"],
+        "tags": [
+          "jobs"
+        ],
         "summary": "PUT /:id/contract",
         "security": [
           {
@@ -369,7 +404,9 @@
     },
     "/:id/status": {
       "put": {
-        "tags": ["contracts"],
+        "tags": [
+          "contracts"
+        ],
         "summary": "PUT /:id/status",
         "security": [
           {
@@ -395,7 +432,9 @@
     },
     "/:id/dispute": {
       "post": {
-        "tags": ["contracts"],
+        "tags": [
+          "contracts"
+        ],
         "summary": "POST /:id/dispute",
         "security": [
           {
@@ -421,7 +460,9 @@
     },
     "/challenge": {
       "post": {
-        "tags": ["auth"],
+        "tags": [
+          "auth"
+        ],
         "summary": "POST /challenge",
         "security": [
           {
@@ -447,7 +488,9 @@
     },
     "/sign": {
       "post": {
-        "tags": ["auth"],
+        "tags": [
+          "auth"
+        ],
         "summary": "POST /sign",
         "security": [
           {
@@ -473,7 +516,9 @@
     },
     "/register": {
       "post": {
-        "tags": ["auth"],
+        "tags": [
+          "auth"
+        ],
         "summary": "POST /register",
         "security": [
           {
@@ -499,7 +544,9 @@
     },
     "/login": {
       "post": {
-        "tags": ["auth"],
+        "tags": [
+          "auth"
+        ],
         "summary": "POST /login",
         "security": [
           {
@@ -519,6 +566,108 @@
                 "type": "object"
               }
             }
+          }
+        }
+      }
+    },
+    "/api/verify-tx": {
+      "post": {
+        "tags": [
+          "verifyTx"
+        ],
+        "summary": "Verify a Solana Devnet transaction",
+        "description": "Accepts a transaction signature and an expected wallet address. Fetches the transaction from Solana Devnet and confirms it exists, was successful, and involves the given wallet.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["signature", "wallet"],
+                "properties": {
+                  "signature": {
+                    "type": "string",
+                    "description": "Base58-encoded Solana transaction signature",
+                    "example": "5UfgJ5vVZxUxefDGqzqkVLHzHxVTyYH9StYyHKGSzYk5xPbdjCGbGmWz74arTm5JnYSMNXByBMJxmvqrdLXbmPz"
+                  },
+                  "wallet": {
+                    "type": "string",
+                    "description": "Base58-encoded Solana wallet public key expected to be involved in the transaction",
+                    "example": "8MDmoKArpWj9zGTeNxk7NpMe78tLEqxDiHY5XJRmWQ8y"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Transaction verified (successful or failed)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "transactionFound": { "type": "boolean" },
+                    "status": { "type": "string", "enum": ["success", "failed"] },
+                    "walletMatched": { "type": "boolean" },
+                    "signature": { "type": "string" },
+                    "slot": { "type": "integer" },
+                    "blockTime": { "type": "integer" },
+                    "message": { "type": "string" }
+                  }
+                },
+                "examples": {
+                  "success": {
+                    "summary": "Transaction verified successfully",
+                    "value": {
+                      "success": true,
+                      "transactionFound": true,
+                      "status": "success",
+                      "walletMatched": true,
+                      "signature": "5UfgJ5vVZxUxefDGqzqkVLHzHxVTyYH9StYyHKGSzYk5xPbdjCGbGmWz74arTm5JnYSMNXByBMJxmvqrdLXbmPz",
+                      "slot": 280491234,
+                      "blockTime": 1741632000,
+                      "message": "Transaction verified successfully on Solana Devnet"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing or invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": false },
+                    "transactionFound": { "type": "boolean", "example": false },
+                    "message": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Transaction not found on Devnet",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": false },
+                    "transactionFound": { "type": "boolean", "example": false },
+                    "message": { "type": "string", "example": "Transaction not found on Solana Devnet" }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error"
           }
         }
       }

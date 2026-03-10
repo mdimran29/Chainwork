@@ -11,6 +11,7 @@ const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/users');
 const jobRoutes = require('./routes/jobs');
 const contractRoutes = require('./routes/contracts');
+const verifyTxRoutes = require('./routes/verifyTx');
 const PORT = Number(process.env.PORT) || 5000;
 const app = express();
 
@@ -40,6 +41,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/jobs', jobRoutes);
 app.use('/api/contracts', contractRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/verify-tx', verifyTxRoutes);
 
 // Root
 app.get('/', (req, res) => {
