@@ -4,7 +4,7 @@ const { Connection, PublicKey } = require('@solana/web3.js');
 const DEVNET_RPC = 'https://api.devnet.solana.com';
 
 // Replace this with the actual expected wallet public key
-const EXPECTED_WALLET_ADDRESS = 'FDQHfbqgSUk94XKFKWu6E8qidL7bwGEXDPzAoTVTXEDm';
+const EXPECTED_WALLET_ADDRESS = 'DXT4SA3Mgdm9xeVfiUa7av2WmPX5RukSfqoe8CXrrKAt';
 
 // @desc    Verify a Solana Devnet transaction
 // @route   POST /api/verify-tx
