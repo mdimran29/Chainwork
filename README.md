@@ -1,121 +1,125 @@
-# Web3 Job Marketplace
+# Chainwork - Solana Job Marketplace
 
-A decentralized job marketplace platform built on Solana blockchain, enabling secure and transparent freelance job postings, bidding, and payments. The platform combines the power of blockchain technology with a modern web interface to create a trustless environment for freelancers and employers.
+A decentralized job marketplace platform built on Solana blockchain, enabling secure and transparent freelance job postings, bidding, and payments.
 
 ## 🚀 Features
 
 - **Blockchain-Powered**: Built on Solana for fast, low-cost transactions
 - **Smart Contract Integration**: Secure job contracts and payments
+- **Transaction Verification**: Backend API to verify Solana Devnet transactions
 - **User Authentication**: Wallet-based authentication system
 - **Job Management**: Create, browse, and manage job listings
-- **Profile System**: Comprehensive user profiles for freelancers and employers
 - **Real-time Updates**: Live contract and payment status tracking
-- **Responsive Design**: Modern UI built with React and Tailwind CSS
 
 ## 🛠 Tech Stack
 
 ### Frontend
-
 - React.js with TypeScript
-- Tailwind CSS for styling
-- Web3 integration with Solana wallet adapters
-- Modern component architecture
+- Tailwind CSS
+- Solana wallet adapters
+- Vite build tool
 
 ### Backend
-
-- Node.js server
-- Express.js framework
-- MongoDB database (assumed based on models)
+- Node.js with Express.js
+- MongoDB database
+- @solana/web3.js for blockchain interactions
 - JWT authentication
 
 ### Blockchain
+- Solana Devnet
+- Rust smart contracts with Anchor framework
 
-- Solana Program (Smart Contract)
-- Rust programming language
-- Solana Web3.js for blockchain interactions
-
-## 🏗 Project Structure
-
-```
-web3-project/
-├── client/           # React frontend application
-├── server/           # Node.js backend server
-└── solana-program/   # Solana smart contract
-```
-
-## 🚦 Getting Started
+## 📦 Installation
 
 ### Prerequisites
-
-- Node.js (v14 or higher)
-- Rust and Cargo
-- Solana CLI tools
+- Node.js v14 or higher
 - MongoDB
+- Solana CLI (optional)
 
-### Installation
+### Setup
 
 1. Clone the repository:
-
    ```bash
-   git clone 
-   cd web3-project
+   git clone https://github.com/mdimran29/Chainwork.git
+   cd Chainwork
    ```
 
-2. Install frontend dependencies:
-
-   ```bash
-   cd client
-   npm install
-   ```
-
-3. Install backend dependencies:
-
-   ```bash
-   cd ../server
-   npm install
-   ```
-
-4. Build Solana program:
-
-   ```bash
-   cd ../solana-program
-   cargo build
-   ```
-
-5. Set up environment variables:
-   - Create `.env` files in both `client/` and `server/` directories
-   - Add necessary environment variables (see `.env.example` files)
-
-### Running the Application
-
-1. Start the frontend:
-
-   ```bash
-   cd client
-   npm start
-   ```
-
-2. Start the backend server:
-
+2. Install backend dependencies:
    ```bash
    cd server
-   npm start
+   npm install
+   cp .env.example .env
+   # Edit .env with your configuration
    ```
 
-3. Deploy Solana program (if needed):
+3. Install frontend dependencies:
    ```bash
-   cd solana-program
-   solana program deploy target/deploy/[program-name].so
+   cd ../app
+   npm install
    ```
 
-## 🤝 Contributing
+4. Start the backend:
+   ```bash
+   cd server
+   npm run start:api
+   ```
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+5. Start the frontend:
+   ```bash
+   cd app
+   npm run dev
+   ```
+
+## 🔧 Configuration
+
+Create `.env` files in both `server/` and `app/` directories based on the `.env.example` templates.
+
+### Server Environment Variables
+- `PORT` - Server port (default: 5000)
+- `MONGO_URI` - MongoDB connection string
+- `JWT_SECRET` - JWT secret key
+- `SOLANA_NETWORK` - Solana network (devnet/mainnet)
+
+### App Environment Variables
+- `VITE_SOLANA_NETWORK` - Solana network
+- `VITE_RPC_ENDPOINT` - Solana RPC endpoint
+- `VITE_ESCROW_PROGRAM_ID` - Smart contract program ID
+
+## 📡 API Endpoints
+
+### Transaction Verification
+`POST /api/verify-tx`
+
+Verifies a Solana Devnet transaction.
+
+**Request:**
+```json
+{
+  "signature": "transaction_signature",
+  "wallet": "wallet_address"
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "transactionFound": true,
+  "status": "success",
+  "walletMatched": true
+}
+```
 
 ## 📝 License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+MIT License
 
-## ⚠️ Disclaimer
+## 👤 Author
 
-This project is in development and should not be used in production without proper security audits and testing.
+**mdimran29**
+- GitHub: [@mdimran29](https://github.com/mdimran29)
+- Email: imranansari2932003@gmail.com
+
+---
+
+Built with ❤️ using Solana blockchain

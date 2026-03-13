@@ -9,9 +9,9 @@
     "dev": "npm run start:docs && npm run start:api"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
+  "author": "mdimran29 <imranansari2932003@gmail.com>",
+  "license": "MIT",
+  "description": "Chainwork - Solana blockchain job marketplace backend",
   "dependencies": {
     "@solana/wallet-adapter-base": "^0.9.27",
     "@solana/web3.js": "^1.98.4",
