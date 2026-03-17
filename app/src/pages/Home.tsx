@@ -1,251 +1,190 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-
 import { WalletButton } from '../components/WalletButton';
 import { useAppKitAccount } from '@reown/appkit/react';
+
+const features = [
+  {
+    icon: (
+      <svg className="h-6 w-6 text-primary-600" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M9 12L11 14L15 10M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    ),
+    title: 'Secure Escrow',
+    desc: 'Funds are locked in smart contract escrow until work is verified and approved — full protection for both parties.',
+  },
+  {
+    icon: (
+      <svg className="h-6 w-6 text-primary-600" viewBox="0 0 24 24" fill="none">
+        <path d="M13 10V3L4 14h7v7l9-11h-7z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      </svg>
+    ),
+    title: 'Instant Payments',
+    desc: 'Blockchain-powered settlements in seconds — no bank delays, no wire fees, no waiting.',
+  },
+  {
+    icon: (
+      <svg className="h-6 w-6 text-primary-600" viewBox="0 0 24 24" fill="none">
+        <path d="M12 1V23M17 5H9.5a3.5 3.5 0 000 7H14.5a3.5 3.5 0 010 7H6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      </svg>
+    ),
+    title: 'Ultra-Low Fees',
+    desc: 'Transaction costs measured in fractions of a cent — keep more of what you earn.',
+  },
+  {
+    icon: (
+      <svg className="h-6 w-6 text-primary-600" viewBox="0 0 24 24" fill="none">
+        <path d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      </svg>
+    ),
+    title: 'Global Access',
+    desc: 'Work with anyone, anywhere in the world — no borders, no currency conversions.',
+  },
+];
+
+const steps = [
+  { num: '01', title: 'Connect Wallet', desc: 'Link your crypto wallet to create your identity on ChainWork.' },
+  { num: '02', title: 'Build Profile', desc: 'Showcase your skills as a freelancer or post your needs as a client.' },
+  { num: '03', title: 'Find & Post Jobs', desc: 'Browse open projects or publish new opportunities in minutes.' },
+  { num: '04', title: 'Get Paid in Crypto', desc: 'Release escrow on completion — funds arrive instantly in your wallet.' },
+];
 
 const Home: React.FC = () => {
   const { isConnected } = useAppKitAccount();
 
   return (
     <>
-      {/* Hero Section */}
-      <div className="max-w-7xl mx-auto px-4 ">
-        <div className="text-center max-w-3xl mx-auto">
-          <h1 className="text-4xl md:text-5xl font-bold text-primary-600 mb-4">
-            Solana Freelance Platform
-          </h1>
-          <h2 className="text-2xl md:text-3xl text-secondary-900 font-semibold mb-6">
-            Connect, Work, and Get Paid with Crypto
-          </h2>
+      {/* ── Hero ── */}
+      <section className="hero-bg py-20 px-4">
+        <div className="max-w-4xl mx-auto text-center">
+          <div className="inline-flex items-center gap-2 bg-primary-100 text-primary-700 text-xs font-bold px-4 py-1.5 rounded-full mb-6 tracking-wide uppercase">
+            <span className="h-1.5 w-1.5 rounded-full bg-primary-500 animate-pulse" />
+            Powered by Blockchain
+          </div>
 
-          <p className="text-lg text-secondary-700 mb-10 leading-relaxed">
-            A decentralized freelance marketplace powered by Solana blockchain. Find work, hire
-            talent, and make secure payments with SOL.
+          <h1 className="text-5xl md:text-6xl font-extrabold text-secondary-900 mb-5 leading-tight">
+            Freelance without{' '}
+            <span className="gradient-text">intermediaries</span>
+          </h1>
+
+          <p className="text-lg md:text-xl text-secondary-600 mb-10 max-w-2xl mx-auto leading-relaxed">
+            ChainWork connects clients and freelancers through smart contract escrow — transparent, trustless, and instant crypto payments.
           </p>
 
-          <div className="mt-10 flex flex-col items-center max-w-md mx-auto">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
             {!isConnected ? (
-              <div className="bg-primary-50 rounded-xl p-6 shadow-xl mx-auto w-full">
-                <p className="text-secondary-600 mb-4 text-center text-lg">
-                  Connect your wallet to get started
-                </p>
-                <div className="flex justify-center">
-                  <WalletButton />
-                </div>
-              </div>
+              <WalletButton />
             ) : (
-              <div className="bg-primary-50 rounded-xl p-6 shadow-xl mx-auto w-full">
-                <p className="text-secondary-600 mb-4 text-center text-lg">
-                  Browse currently available jobs
-                </p>
-                <div className="flex justify-center">
-                  <Link
-                    to="/jobs"
-                    className="px-4 py-2 bg-primary-600 hover:bg-primary-400 text-white rounded-lg transition-colors"
-                  >
-                    Browse Jobs
-                  </Link>
-                  {/* <Link
-                    to="/register"
-                    className="border-2 border-primary-600 rounded-xl text-primary-600 hover:text-white hover:bg-primary-600 flex py-3 px-8 text-base font-semibold"
-                  >
-                    Create Account
-                  </Link> */}
-                </div>
+              <>
+                <Link
+                  to="/jobs"
+                  className="px-8 py-3.5 bg-primary-600 text-white font-bold rounded-xl btn-glow hover:bg-primary-700 transition-all text-base"
+                >
+                  Browse Jobs →
+                </Link>
+                <Link
+                  to="/jobs/create"
+                  className="px-8 py-3.5 border-2 border-primary-600 text-primary-600 font-bold rounded-xl hover:bg-primary-50 transition-all text-base"
+                >
+                  Post a Job
+                </Link>
+              </>
+            )}
+          </div>
+
+          {/* Stats row */}
+          <div className="mt-14 grid grid-cols-3 gap-6 max-w-lg mx-auto">
+            {[
+              { val: '< $0.01', label: 'Per Transaction' },
+              { val: '< 1s', label: 'Settlement Time' },
+              { val: '100%', label: 'On-Chain' },
+            ].map(({ val, label }) => (
+              <div key={label} className="text-center">
+                <p className="text-2xl font-extrabold gradient-text">{val}</p>
+                <p className="text-xs text-secondary-500 mt-0.5 font-medium">{label}</p>
               </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Features ── */}
+      <section className="py-20 px-4 bg-white">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-14">
+            <h2 className="text-3xl md:text-4xl font-extrabold text-secondary-900 mb-3">
+              Why <span className="gradient-text">ChainWork</span>?
+            </h2>
+            <p className="text-secondary-500 max-w-xl mx-auto text-base">
+              We replace trust with math — smart contracts enforce every agreement automatically.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {features.map(({ icon, title, desc }) => (
+              <div
+                key={title}
+                className="rounded-2xl border border-secondary-100 bg-white p-6 card-hover"
+              >
+                <div className="h-12 w-12 rounded-xl bg-primary-50 flex items-center justify-center mb-4">
+                  {icon}
+                </div>
+                <h3 className="text-base font-bold text-secondary-900 mb-1.5">{title}</h3>
+                <p className="text-secondary-500 text-sm leading-relaxed">{desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── How It Works ── */}
+      <section className="py-20 px-4 hero-bg">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-14">
+            <h2 className="text-3xl md:text-4xl font-extrabold text-secondary-900 mb-3">How It Works</h2>
+            <p className="text-secondary-500 max-w-md mx-auto text-base">
+              Get started in four simple steps — no bank account required.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {steps.map(({ num, title, desc }) => (
+              <div key={num} className="relative bg-white rounded-2xl p-6 shadow-sm border border-secondary-100 card-hover">
+                <span className="text-4xl font-black text-primary-100 absolute top-4 right-5 leading-none select-none">
+                  {num}
+                </span>
+                <div className="h-10 w-10 rounded-xl bg-primary-600 flex items-center justify-center mb-4">
+                  <span className="text-white font-extrabold text-sm">{parseInt(num)}</span>
+                </div>
+                <h3 className="text-base font-bold text-secondary-900 mb-1.5">{title}</h3>
+                <p className="text-secondary-500 text-sm leading-relaxed">{desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── CTA Banner ── */}
+      <section className="py-16 px-4 bg-primary-600">
+        <div className="max-w-3xl mx-auto text-center">
+          <h2 className="text-3xl font-extrabold text-white mb-4">Ready to build the future of work?</h2>
+          <p className="text-primary-200 mb-8 text-base">
+            Join ChainWork — where every agreement is enforced by code, not contracts.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            {isConnected ? (
+              <Link
+                to="/register"
+                className="px-8 py-3.5 bg-white text-primary-700 font-bold rounded-xl hover:bg-primary-50 transition-all"
+              >
+                Create Account →
+              </Link>
+            ) : (
+              <WalletButton />
             )}
           </div>
         </div>
-      </div>
-
-      {/* Features Section */}
-      <div className="py-16 mb-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-center text-secondary-900 mb-12">
-            Why Choose Our Platform?
-          </h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <div className="bg-primary-50 rounded-xl p-6 shadow-xl">
-              <div className="h-12 w-12 bg-white shadow-2xl rounded-full flex items-center justify-center mb-4">
-                <svg
-                  className="h-7 w-7 text-primary-600"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                  <path
-                    d="M12 17V17.01"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                  <path
-                    d="M12 14C11.9816 13.5216 12.1344 13.0523 12.4373 12.6837C12.7401 12.3152 13.1725 12.0788 13.64 12C14.0814 11.9458 14.4835 11.748 14.7817 11.4438C15.0799 11.1396 15.2571 10.7484 15.28 10.33C15.2679 9.96289 15.1518 9.60736 14.9448 9.30527C14.7379 9.00318 14.4494 8.76631 14.112 8.622C13.7746 8.47769 13.4033 8.43267 13.0435 8.49265C12.6837 8.55262 12.352 8.7147 12.09 8.96"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </div>
-              <h3 className="text-xl font-semibold text-secondary-900 mb-2">Secure Payments</h3>
-              <p className="text-secondary-600">
-                All payments are secured through Solana blockchain escrow contracts, ensuring
-                freelancers get paid and clients get quality work.
-              </p>
-            </div>
-
-            <div className="bg-primary-50 rounded-xl p-6 shadow-xl">
-              <div className="h-12 w-12 bg-white shadow-2xl rounded-full flex items-center justify-center mb-4">
-                <svg
-                  className="h-7 w-7 text-primary-600"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M12 1V23"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                  <path
-                    d="M17 5H9.5C8.57174 5 7.6815 5.36875 7.02513 6.02513C6.36875 6.6815 6 7.57174 6 8.5C6 9.42826 6.36875 10.3185 7.02513 10.9749C7.6815 11.6313 8.57174 12 9.5 12H14.5C15.4283 12 16.3185 12.3687 16.9749 13.0251C17.6313 13.6815 18 14.5717 18 15.5C18 16.4283 17.6313 17.3185 16.9749 17.9749C16.3185 18.6313 15.4283 19 14.5 19H6"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </div>
-              <h3 className="text-xl font-semibold text-secondary-900 mb-2">Low Fees</h3>
-              <p className="text-secondary-600">
-                Benefit from Solana's ultra-low transaction fees, saving money on every payment
-                compared to traditional platforms.
-              </p>
-            </div>
-
-            <div className="bg-primary-50 rounded-xl p-6 shadow-xl">
-              <div className="h-12 w-12 bg-white shadow-2xl rounded-full flex items-center justify-center mb-4">
-                <svg
-                  className="h-7 w-7 text-primary-600"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M13 2L3 14H12L11 22L21 10H12L13 2Z"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </div>
-              <h3 className="text-xl font-semibold text-secondary-900 mb-2">Fast Transactions</h3>
-              <p className="text-secondary-600">
-                Solana's high-speed blockchain ensures payments are processed within seconds, not
-                days like traditional payment methods.
-              </p>
-            </div>
-
-            <div className="bg-primary-50 rounded-xl p-6 shadow-xl">
-              <div className="h-12 w-12 bg-white shadow-2xl rounded-full flex items-center justify-center mb-4">
-                <svg
-                  className="h-7 w-7 text-primary-600"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                  <path
-                    d="M2 12H22"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                  <path
-                    d="M12 2C14.5013 4.73835 15.9228 8.29203 16 12C15.9228 15.708 14.5013 19.2616 12 22C9.49872 19.2616 8.07725 15.708 8 12C8.07725 8.29203 9.49872 4.73835 12 2Z"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </div>
-              <h3 className="text-xl font-semibold text-secondary-900 mb-2">Global Access</h3>
-              <p className="text-secondary-600">
-                Work with clients and freelancers from around the world without currency conversion
-                or international transfer fees.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* How It Works Section */}
-      <div className="py-16 mb-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-center text-secondary-900 mb-12">How It Works</h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <div className="flex flex-col items-center text-center justify-center">
-              <div className="border-2 border-primary-100 rounded-xl p-6 shadow-xl text-center">
-                <div className="h-12 w-12 bg-primary-600 rounded-full flex items-center mx-auto justify-center mb-4 text-white font-bold text-xl">
-                  1
-                </div>
-                <h3 className="text-xl font-semibold text-secondary-900 mb-2">Connect Wallet</h3>
-                <p className="text-secondary-600">
-                  Connect your Phantom wallet to access the platform
-                </p>
-              </div>
-            </div>
-            <div className="border-2 border-primary-100 rounded-xl p-6 shadow-xl text-center">
-              <div className="h-12 w-12 bg-primary-600 rounded-full flex items-center mx-auto justify-center mb-4 text-white font-bold text-xl">
-                2
-              </div>
-              <h3 className="text-xl font-semibold text-secondary-900 mb-2">Create Profile</h3>
-              <p className="text-secondary-600">
-                Register as a client or freelancer with your skills
-              </p>
-            </div>
-            <div className="border-2 border-primary-100 rounded-xl p-6 shadow-xl text-center">
-              <div className="h-12 w-12 bg-primary-600 rounded-full flex items-center mx-auto justify-center mb-4 text-white font-bold text-xl">
-                3
-              </div>
-              <h3 className="text-xl font-semibold text-secondary-900 mb-2">Post or Find Jobs</h3>
-              <p className="text-secondary-600">Post new projects or browse available jobs</p>
-            </div>
-            <div className="border-2 border-primary-100 rounded-xl p-6 shadow-xl text-center">
-              <div className="h-12 w-12 bg-primary-600 rounded-full flex items-center mx-auto justify-center mb-4 text-white font-bold text-xl">
-                4
-              </div>
-              <h3 className="text-xl font-semibold text-secondary-900 mb-2">Secure Payments</h3>
-              <p className="text-secondary-600">
-                Fund contracts with escrow and release payment on completion
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
+      </section>
     </>
   );
 };

@@ -45,7 +45,7 @@ app.use('/api/verify-tx', verifyTxRoutes);
 
 // Root
 app.get('/', (req, res) => {
-  res.send('Solana Freelance Platform API is running');
+  res.send('ChainWork Freelance Platform API is running');
 });
 
 // Api Docs, run from docs folder
