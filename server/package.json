@@ -19,7 +19,6 @@
     "bs58": "^6.0.0",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
-    "parsejson-pro": "^2.3.18",
     "express": "^5.2.1",
     "express-rate-limit": "^8.2.1",
     "joi": "^18.0.2",

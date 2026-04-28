@@ -17,6 +17,8 @@ interface VerifyResponse {
   success: boolean;
   publicKey: string;
   message: string;
+  token?: string;
+  user?: any;
 }
 
 interface AuthContextType extends AuthState {
@@ -73,6 +75,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (data.success) {
         // Persist auth state
         localStorage.setItem('wallet_verified', 'true');
+
+        if (data.token && data.user) {
+          localStorage.setItem('sol_token', data.token);
+          localStorage.setItem('userInfo', JSON.stringify(data.user));
+          window.dispatchEvent(new Event('auth-change'));
+        }
 
         dispatch({
           type: 'AUTH_SUCCESS',

@@ -6,6 +6,73 @@ import { WalletButton } from '../components/WalletButton';
 import { useAppKitAccount } from '@reown/appkit/react';
 import { useWalletAuth } from '../hooks/useWalletAuth';
 
+const IT_SKILLS = [
+  // Core Programming
+  'JavaScript', 'TypeScript', 'Python', 'Java', 'C++', 'C#', 'Go', 'Rust',
+
+  // Frontend
+  'React', 'Next.js', 'Vue.js', 'Angular', 'HTML', 'CSS', 'Tailwind CSS',
+  'Redux', 'Zustand', 'Framer Motion', 'Three.js', 'WebGL',
+  'Responsive Design', 'Progressive Web Apps (PWA)',
+
+  // Backend
+  'Node.js', 'Express.js', 'NestJS', 'Fastify',
+  'Django', 'Flask', 'Spring Boot',
+  'Microservices Architecture', 'Monolith Architecture',
+
+  // Mobile
+  'React Native', 'Flutter', 'Swift', 'Kotlin',
+
+  // Databases
+  'MongoDB', 'PostgreSQL', 'MySQL', 'Redis', 'Firebase',
+  'Prisma ORM', 'Mongoose', 'Sequelize',
+
+  // APIs & Communication
+  'REST API', 'GraphQL', 'gRPC', 'WebSockets', 'Socket.IO',
+
+  // DevOps & Cloud
+  'AWS', 'Azure', 'Google Cloud (GCP)',
+  'Docker', 'Kubernetes', 'CI/CD Pipelines',
+  'GitHub Actions', 'Jenkins', 'Nginx',
+  'Serverless Architecture', 'Terraform',
+
+  // Blockchain / Web3
+  'Blockchain', 'Solidity', 'Smart Contracts',
+  'Web3.js', 'Ethers.js', 'Hardhat', 'Foundry',
+  'IPFS', 'The Graph', 'Chainlink',
+  'DeFi Protocols', 'Tokenomics',
+  'Solana', 'Anchor Framework',
+
+  // Security
+  'Cryptography', 'Cybersecurity',
+  'OWASP Top 10', 'Smart Contract Auditing',
+  'Penetration Testing',
+
+  // AI / Data
+  'Machine Learning', 'Deep Learning',
+  'Data Science', 'TensorFlow', 'PyTorch',
+  'Pandas', 'NumPy', 'OpenCV',
+  'LLMs', 'Prompt Engineering', 'AI Agents',
+
+  // System Design
+  'System Design', 'Scalability', 'Load Balancing',
+  'Caching Strategies', 'Distributed Systems',
+  'Event-Driven Architecture', 'Message Queues (Kafka, RabbitMQ)',
+
+  // Testing
+  'Jest', 'Mocha', 'Chai', 'Cypress', 'Playwright',
+  'Unit Testing', 'Integration Testing', 'E2E Testing',
+
+  // Tools & Workflow
+  'Git', 'GitHub', 'GitLab',
+  'Linux', 'Bash Scripting',
+  'Agile', 'Scrum', 'Project Management',
+  'Jira', 'Notion',
+
+  // Design
+  'Figma', 'UI/UX', 'Design Systems'
+];
+
 interface RegisterForm {
   username: string;
   email: string;
@@ -13,7 +80,7 @@ interface RegisterForm {
   confirmPassword: string;
   walletAddress: string;
   role: string;
-  skills: string[] | string;
+  skills: string[];
   bio: string;
 }
 
@@ -38,11 +105,14 @@ const Register: React.FC = () => {
   const [walletMessage, setWalletMessage] = useState('');
   const { authenticateWallet } = useWalletAuth();
 
-  // Check if wallet is isConnected
+  const [skillInput, setSkillInput] = useState('');
+  const [skillSuggestions, setSkillSuggestions] = useState<string[]>([]);
+
+  // Check if wallet is connected
   useEffect(() => {
     if (address && isConnected) {
       const shortAddress = `${address.toString().slice(0, 4)}...${address.toString().slice(-4)}`;
-      setWalletMessage(`Wallet isConnected: ${shortAddress}`);
+      setWalletMessage(`Wallet Connected: ${shortAddress}`);
       setErrors(prev => ({ ...prev, general: '' }));
     } else {
       setWalletMessage('');
@@ -53,20 +123,6 @@ const Register: React.FC = () => {
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
-    const skills = [...formData.skills];
-
-    if (name === 'skills') {
-      const skill = value.replace(',', '').trim();
-
-      skills.push(skill);
-
-      setFormData(prevData => ({
-        ...prevData,
-        skills,
-      }));
-
-      return;
-    }
 
     setFormData(prevData => ({
       ...prevData,
@@ -79,6 +135,49 @@ const Register: React.FC = () => {
         delete newErrors[name];
         return newErrors;
       });
+    }
+  };
+
+  const handleSkillInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSkillInput(value);
+
+    if (value.trim()) {
+      const filtered = IT_SKILLS.filter(skill =>
+        skill.toLowerCase().includes(value.toLowerCase()) &&
+        !formData.skills.includes(skill)
+      );
+      setSkillSuggestions(filtered.slice(0, 5));
+    } else {
+      setSkillSuggestions([]);
+    }
+  };
+
+  const addSkill = (skill: string) => {
+    if (!skill.trim()) return;
+    const newSkills = [...formData.skills];
+    if (!newSkills.includes(skill)) {
+      newSkills.push(skill);
+      setFormData(prev => ({ ...prev, skills: newSkills }));
+    }
+    setSkillInput('');
+    setSkillSuggestions([]);
+    if (errors.skills) {
+      setErrors(prev => ({ ...prev, skills: '' }));
+    }
+  };
+
+  const removeSkill = (skillToRemove: string) => {
+    setFormData(prev => ({
+      ...prev,
+      skills: prev.skills.filter(s => s !== skillToRemove)
+    }));
+  };
+
+  const handleSkillKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' || e.key === ',') {
+      e.preventDefault();
+      addSkill(skillInput);
     }
   };
 
@@ -106,11 +205,11 @@ const Register: React.FC = () => {
     }
 
     if (formData.role === 'freelancer' && formData.skills.length < 1) {
-      newErrors.skills = 'Skills are required for freelancers';
+      newErrors.skills = 'At least one skill is required for freelancers';
     }
 
     if (address) {
-      setFormData(prevData => ({ ...prevData, walletAddress: address }));
+      setFormData(prevData => ({ ...prevData, walletAddress: address.toString() }));
     }
 
     setErrors(newErrors);
@@ -119,9 +218,7 @@ const Register: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.dir(formData);
 
-    console.log('1');
     if (!validateForm()) {
       return;
     }
@@ -132,8 +229,9 @@ const Register: React.FC = () => {
     try {
       const response = await api.post('/api/auth/register', {
         ...formData,
-        walletAddress: address,
+        walletAddress: address?.toString(),
       });
+
       localStorage.setItem('sol_token', response.data.token);
       localStorage.setItem('userInfo', JSON.stringify(response.data));
       window.dispatchEvent(new Event('auth-change'));
@@ -142,22 +240,19 @@ const Register: React.FC = () => {
 
       if (!success) {
         setApiError('Invalid wallet signature. Please try again.');
-
+        setIsSubmitting(false);
         return;
       }
 
-      navigate('/dashboard');
+      navigate('/dashboard', { replace: true });
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
         setApiError(error.response.data.message || 'Registration failed. Please try again.');
       } else {
         setApiError('Registration failed. Please try again.');
       }
+      setIsSubmitting(false);
     }
-
-    setIsSubmitting(false);
-
-    navigate('/dashboard', { replace: true });
   };
 
   return (
@@ -172,7 +267,7 @@ const Register: React.FC = () => {
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="border-2 border-primary-100 rounded-xl p-6 shadow-xl py-8 px-4 sm:px-10">
+        <div className="border-2 border-primary-100 rounded-xl p-6 shadow-xl py-8 px-4 sm:px-10 bg-white">
           {/* Wallet Connection Section */}
           <div className="mb-6">
             <h3 className="text-lg font-semibold text-secondary-900 mb-2">
@@ -192,7 +287,6 @@ const Register: React.FC = () => {
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
-                    aria-hidden="true"
                   >
                     <path
                       strokeLinecap="round"
@@ -218,7 +312,6 @@ const Register: React.FC = () => {
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
-                    aria-hidden="true"
                   >
                     <path
                       strokeLinecap="round"
@@ -243,9 +336,8 @@ const Register: React.FC = () => {
                       type="text"
                       value={formData.username}
                       onChange={handleChange}
-                      className={`appearance-none block w-full px-3 py-2 border ${
-                        errors.username ? 'border-red-300' : 'border-gray-300'
-                      } rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm`}
+                      className={`appearance-none block w-full px-3 py-2 border ${errors.username ? 'border-red-300' : 'border-gray-300'
+                        } rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm`}
                       placeholder="Enter your username"
                     />
                     {errors.username && (
@@ -266,9 +358,8 @@ const Register: React.FC = () => {
                       autoComplete="email"
                       value={formData.email}
                       onChange={handleChange}
-                      className={`appearance-none block w-full px-3 py-2 border ${
-                        errors.email ? 'border-red-300' : 'border-gray-300'
-                      } rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm`}
+                      className={`appearance-none block w-full px-3 py-2 border ${errors.email ? 'border-red-300' : 'border-gray-300'
+                        } rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm`}
                       placeholder="Enter your email"
                     />
                     {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email}</p>}
@@ -287,9 +378,8 @@ const Register: React.FC = () => {
                       autoComplete="new-password"
                       value={formData.password}
                       onChange={handleChange}
-                      className={`appearance-none block w-full px-3 py-2 border ${
-                        errors.password ? 'border-red-300' : 'border-gray-300'
-                      } rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm`}
+                      className={`appearance-none block w-full px-3 py-2 border ${errors.password ? 'border-red-300' : 'border-gray-300'
+                        } rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm`}
                       placeholder="Enter your password"
                     />
                     {errors.password && (
@@ -313,9 +403,8 @@ const Register: React.FC = () => {
                       autoComplete="new-password"
                       value={formData.confirmPassword}
                       onChange={handleChange}
-                      className={`appearance-none block w-full px-3 py-2 border ${
-                        errors.confirmPassword ? 'border-red-300' : 'border-gray-300'
-                      } rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm`}
+                      className={`appearance-none block w-full px-3 py-2 border ${errors.confirmPassword ? 'border-red-300' : 'border-gray-300'
+                        } rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm`}
                       placeholder="Confirm your password"
                     />
                     {errors.confirmPassword && (
@@ -347,20 +436,54 @@ const Register: React.FC = () => {
                   <>
                     <div>
                       <label htmlFor="skills" className="block text-sm font-medium text-gray-700">
-                        Skills (comma-separated)
+                        Skills
                       </label>
-                      <div className="mt-1">
+                      <div className="mt-1 relative">
+                        <div className="flex flex-wrap gap-2 mb-2">
+                          {formData.skills.map((skill, index) => (
+                            <span
+                              key={index}
+                              className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800"
+                            >
+                              {skill}
+                              <button
+                                type="button"
+                                onClick={() => removeSkill(skill)}
+                                className="ml-1.5 inline-flex items-center justify-center w-4 h-4 rounded-full text-indigo-400 hover:bg-indigo-200 hover:text-indigo-500 focus:outline-none"
+                              >
+                                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                  <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                                </svg>
+                              </button>
+                            </span>
+                          ))}
+                        </div>
                         <input
                           id="skills"
-                          name="skills"
                           type="text"
-                          value={formData.skills}
-                          onChange={handleChange}
-                          className={`appearance-none block w-full px-3 py-2 border ${
-                            errors.skills ? 'border-red-300' : 'border-gray-300'
-                          } rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm`}
-                          placeholder="E.g. React, Node.js, Solana"
+                          value={skillInput}
+                          onChange={handleSkillInputChange}
+                          onKeyDown={handleSkillKeyDown}
+                          className={`appearance-none block w-full px-3 py-2 border ${errors.skills ? 'border-red-300' : 'border-gray-300'
+                            } rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm`}
+                          placeholder="Type a skill and press Enter or comma to add"
                         />
+
+                        {/* Suggestions Dropdown */}
+                        {skillSuggestions.length > 0 && (
+                          <ul className="absolute z-10 mt-1 w-full bg-white shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
+                            {skillSuggestions.map((suggestion, index) => (
+                              <li
+                                key={index}
+                                onClick={() => addSkill(suggestion)}
+                                className="text-gray-900 cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-indigo-50"
+                              >
+                                {suggestion}
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+
                         {errors.skills && (
                           <p className="mt-1 text-sm text-red-600">{errors.skills}</p>
                         )}
@@ -378,9 +501,8 @@ const Register: React.FC = () => {
                           rows={4}
                           value={formData.bio}
                           onChange={handleChange}
-                          className={`appearance-none block w-full px-3 py-2 border ${
-                            errors.bio ? 'border-red-300' : 'border-gray-300'
-                          } rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm`}
+                          className={`appearance-none block w-full px-3 py-2 border ${errors.bio ? 'border-red-300' : 'border-gray-300'
+                            } rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm`}
                           placeholder="Tell us about yourself and your expertise"
                         />
                       </div>
@@ -391,11 +513,10 @@ const Register: React.FC = () => {
                 <div>
                   <button
                     type="submit"
-                    className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white ${
-                      isSubmitting || !isConnected
+                    className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white ${isSubmitting || !isConnected
                         ? 'bg-indigo-300 cursor-not-allowed'
                         : 'bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500'
-                    }`}
+                      }`}
                   >
                     {isSubmitting ? 'Registering...' : 'Register'}
                   </button>

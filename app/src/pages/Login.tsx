@@ -22,6 +22,7 @@ const Login: React.FC = () => {
   const [walletMessage, setWalletMessage] = useState('');
   const [apiError, setApiError] = useState('');
   const { authenticateWallet, isAuthenticating } = useWalletAuth();
+  const [isEmailLoading, setIsEmailLoading] = useState(false);
 
   useEffect(() => {
     if (isConnected && address) {
@@ -47,49 +48,32 @@ const Login: React.FC = () => {
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
     if (!formData.email.trim()) {
-      newErrors.email = 'Email is required';
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Please enter a valid email address';
+      newErrors.email = 'Email or Username is required';
     }
     if (!formData.password) {
       newErrors.password = 'Password is required';
-    } else if (formData.password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters';
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setApiError('');
     setErrors({});
 
-    if (!isConnected || !address) {
-      setErrors({ general: 'Please connect your wallet before logging in' });
-      return;
-    }
     if (!validateForm()) return;
 
+    setIsEmailLoading(true);
     try {
       const response = await api.post('/api/auth/login', {
         email: formData.email.toLowerCase().trim(),
         password: formData.password,
       });
 
-      if (!response.data.token || !response.data.walletAddress) {
+      if (!response.data.token) {
         setApiError('Invalid response from server. Please try again.');
-        return;
-      }
-
-      if (response.data.walletAddress !== address.toString()) {
-        setApiError('Connected wallet does not match your account wallet.');
-        return;
-      }
-
-      const success = await authenticateWallet();
-      if (!success) {
-        setApiError('Invalid wallet signature. Please try again.');
+        setIsEmailLoading(false);
         return;
       }
 
@@ -108,6 +92,28 @@ const Login: React.FC = () => {
       } else {
         setApiError('An unexpected error occurred. Please try again.');
       }
+    }
+    setIsEmailLoading(false);
+  };
+
+  const handleWalletLogin = async () => {
+    if (!isConnected || !address) {
+      setErrors({ general: 'Please connect your wallet first' });
+      return;
+    }
+    
+    setApiError('');
+    const success = await authenticateWallet();
+    if (!success) {
+      setApiError('Wallet verification failed.');
+      return;
+    }
+    
+    const token = localStorage.getItem('sol_token');
+    if (token) {
+       navigate('/dashboard');
+    } else {
+       setApiError('Wallet verified, but no account found. Please register.');
     }
   };
 
@@ -132,19 +138,37 @@ const Login: React.FC = () => {
           <h2 className="text-xl font-bold text-secondary-900 mb-1">Welcome back</h2>
           <p className="text-sm text-secondary-500 mb-6">Sign in to your account to continue</p>
 
-          {/* Wallet Section */}
+          {/* Wallet Login Section */}
           <div className="mb-5">
             {!isConnected ? (
               <div className="rounded-xl border border-primary-100 bg-primary-50 p-4 flex flex-col items-center gap-3">
-                <p className="text-sm text-secondary-600 font-medium">Connect your wallet to proceed</p>
+                <p className="text-sm text-secondary-600 font-medium">Connect wallet to login instantly</p>
                 <WalletButton />
               </div>
             ) : (
-              <div className="flex items-center gap-2.5 rounded-xl border border-accent-200 bg-accent-50 px-4 py-3">
-                <div className="h-2.5 w-2.5 rounded-full bg-accent-500 animate-pulse" />
-                <span className="text-sm font-semibold text-accent-700">{walletMessage}</span>
+              <div className="flex flex-col gap-3 rounded-xl border border-accent-200 bg-accent-50 p-4">
+                <div className="flex items-center gap-2.5">
+                  <div className="h-2.5 w-2.5 rounded-full bg-accent-500 animate-pulse" />
+                  <span className="text-sm font-semibold text-accent-700">{walletMessage}</span>
+                </div>
+                <button
+                  onClick={handleWalletLogin}
+                  disabled={isAuthenticating}
+                  className="w-full py-2.5 px-4 rounded-xl text-sm font-bold text-white bg-accent-600 hover:bg-accent-700 transition-all disabled:opacity-60"
+                >
+                  {isAuthenticating ? 'Verifying Wallet...' : 'Login with Wallet'}
+                </button>
               </div>
             )}
+          </div>
+
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-secondary-200"></div>
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-white text-secondary-500">Or continue with credentials</span>
+            </div>
           </div>
 
           {/* Error Alert */}
@@ -158,19 +182,19 @@ const Login: React.FC = () => {
           )}
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleEmailLogin} className="space-y-4">
             <div>
               <label htmlFor="email" className="block text-sm font-semibold text-secondary-700 mb-1.5">
-                Email Address
+                Email or Username
               </label>
               <input
-                type="email"
+                type="text"
                 id="email"
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                placeholder="you@example.com"
-                disabled={isAuthenticating}
+                placeholder="Email or Username"
+                disabled={isEmailLoading}
                 className={`w-full px-4 py-2.5 rounded-xl border text-sm shadow-sm placeholder-secondary-400 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent transition-all disabled:opacity-60 disabled:cursor-not-allowed ${
                   errors.email ? 'border-red-300 bg-red-50' : 'border-secondary-200 bg-white'
                 }`}
@@ -190,7 +214,7 @@ const Login: React.FC = () => {
                 value={formData.password}
                 onChange={handleChange}
                 placeholder="Enter your password"
-                disabled={isAuthenticating}
+                disabled={isEmailLoading}
                 className={`w-full px-4 py-2.5 rounded-xl border text-sm shadow-sm placeholder-secondary-400 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent transition-all disabled:opacity-60 disabled:cursor-not-allowed ${
                   errors.password ? 'border-red-300 bg-red-50' : 'border-secondary-200 bg-white'
                 }`}
@@ -201,21 +225,20 @@ const Login: React.FC = () => {
 
             <button
               type="submit"
-              disabled={isAuthenticating || !isConnected}
+              disabled={isEmailLoading}
               className={`w-full flex justify-center items-center gap-2 py-3 px-4 rounded-xl text-sm font-bold text-white transition-all duration-200 mt-2 ${
-                isAuthenticating || !isConnected
+                isEmailLoading
                   ? 'bg-primary-300 cursor-not-allowed'
                   : 'bg-primary-600 hover:bg-primary-700 btn-glow'
               }`}
-              aria-busy={isAuthenticating}
             >
-              {isAuthenticating ? (
+              {isEmailLoading ? (
                 <>
                   <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                   </svg>
-                  Authenticating...
+                  Logging in...
                 </>
               ) : (
                 'Sign In'

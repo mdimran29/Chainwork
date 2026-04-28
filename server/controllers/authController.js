@@ -87,10 +87,31 @@ const verifySignature = async (req, res) => {
     // Delete used challenge
     await Challenge.deleteOne({ publicKey });
 
+    // Check if user is registered with this wallet
+    const user = await User.findOne({ walletAddress: publicKey });
+
+    let userData = undefined;
+    let token = undefined;
+
+    if (user) {
+      token = generateToken(user._id);
+      userData = {
+        _id: user._id,
+        username: user.username,
+        email: user.email,
+        walletAddress: user.walletAddress,
+        role: user.role,
+        skills: user.skills,
+        bio: user.bio,
+      };
+    }
+
     return res.json({
       success: true,
       publicKey,
       message: 'Wallet verified successfully',
+      token,
+      user: userData
     });
   } catch (error) {
     console.error('Verification error:', error);
@@ -157,19 +178,21 @@ const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Find user & include password
-    const user = await User.findOne({ email }).select('+password');
+    // Find user by email OR username & include password
+    const user = await User.findOne({
+      $or: [{ email: email }, { username: email }]
+    }).select('+password');
 
     // If no user in DB → send generic auth error
     if (!user) {
-      return res.status(401).json({ message: 'Invalid email or password' });
+      return res.status(401).json({ message: 'Invalid email/username or password' });
     }
 
     // Compare passwords
     const isMatch = await user.matchPassword(password);
 
     if (!isMatch) {
-      return res.status(401).json({ message: 'Invalid email or password' });
+      return res.status(401).json({ message: 'Invalid email/username or password' });
     }
 
     return res.json({
